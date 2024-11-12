@@ -1,133 +1,100 @@
-// app.js
-const express = require("express");
-const multer = require("multer");
-const { db, bucket } = require("./firebaseConfig");
+import express from 'express';
+import { db } from './firebaseConfig.js';
+import bodyParser from 'body-parser';
 
 const app = express();
-app.use(express.json());
+app.use(bodyParser.json({ limit: '10mb' })); // Limit to handle larger base64 images
 
-// Multer setup for file uploads
-const upload = multer({ storage: multer.memoryStorage() });
+const employeesCollection = db.collection('employees');
 
 // Add a new employee
-app.post("/employees", upload.single("photo"), async (req, res) => {
+app.post('/employees', async (req, res) => {
   try {
-    const { name, surname, age, idNumber, role } = req.body;
-    const photoFile = req.file;
+    const { name, surname, age, idNumber, photo, role } = req.body;
 
-    // Upload photo to Firebase Storage
-    const photoName = `employees/${Date.now()}_${photoFile.originalname}`;
-    const file = bucket.file(photoName);
-
-    await file.save(photoFile.buffer, {
-      contentType: photoFile.mimetype,
-    });
-    const photoURL = `https://storage.googleapis.com/${bucket.name}/${photoName}`;
-
-    // Save employee data to Firestore
-    const employeeRef = db.collection("employees").doc();
-    await employeeRef.set({
+    const newEmployee = {
       name,
       surname,
       age,
       idNumber,
+      photo, // base64 string
       role,
-      photoURL,
-    });
+    };
 
-    res.status(201).json({ id: employeeRef.id, message: "Employee added successfully" });
+    const employeeDoc = await employeesCollection.add(newEmployee);
+    res.status(201).json({ id: employeeDoc.id, ...newEmployee });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(error);
+    res.status(500).json({ error: 'Failed to add employee' });
   }
 });
 
 // Get all employees
-app.get("/employees", async (req, res) => {
+app.get('/employees', async (req, res) => {
   try {
-    const snapshot = await db.collection("employees").get();
-    const employees = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-    res.json(employees);
+    const snapshot = await employeesCollection.get();
+    const employees = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    res.status(200).json(employees);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch employees' });
   }
 });
 
-// Get an employee by ID
-app.get("/employees/:id", async (req, res) => {
+// Get a specific employee by ID
+app.get('/employees/:id', async (req, res) => {
   try {
-    const doc = await db.collection("employees").doc(req.params.id).get();
-    if (!doc.exists) {
-      return res.status(404).json({ error: "Employee not found" });
+    const employeeId = req.params.id;
+    const employeeDoc = await employeesCollection.doc(employeeId).get();
+
+    if (!employeeDoc.exists) {
+      return res.status(404).json({ error: 'Employee not found' });
     }
-    res.json({ id: doc.id, ...doc.data() });
+
+    res.status(200).json({ id: employeeDoc.id, ...employeeDoc.data() });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(error);
+    res.status(500).json({ error: 'Failed to fetch employee' });
   }
 });
 
 // Update an employee
-app.put("/employees/:id", upload.single("photo"), async (req, res) => {
+app.put('/employees/:id', async (req, res) => {
   try {
-    const { name, surname, age, idNumber, role } = req.body;
-    const photoFile = req.file;
+    const employeeId = req.params.id;
+    const { name, surname, age, idNumber, photo, role } = req.body;
 
-    const employeeRef = db.collection("employees").doc(req.params.id);
-    const doc = await employeeRef.get();
+    const updatedEmployee = {
+      name,
+      surname,
+      age,
+      idNumber,
+      photo, // base64 string
+      role,
+    };
 
-    if (!doc.exists) {
-      return res.status(404).json({ error: "Employee not found" });
-    }
-
-    let updatedData = { name, surname, age, idNumber, role };
-
-    // If a new photo is uploaded, update Firebase Storage and Firestore
-    if (photoFile) {
-      const oldPhotoURL = doc.data().photoURL;
-      if (oldPhotoURL) {
-        const oldFile = bucket.file(oldPhotoURL.split(`${bucket.name}/`)[1]);
-        await oldFile.delete();
-      }
-      const photoName = `employees/${Date.now()}_${photoFile.originalname}`;
-      const file = bucket.file(photoName);
-      await file.save(photoFile.buffer, {
-        contentType: photoFile.mimetype,
-      });
-      updatedData.photoURL = `https://storage.googleapis.com/${bucket.name}/${photoName}`;
-    }
-
-    await employeeRef.update(updatedData);
-    res.json({ message: "Employee updated successfully" });
+    await employeesCollection.doc(employeeId).set(updatedEmployee, { merge: true });
+    res.status(200).json({ id: employeeId, ...updatedEmployee });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(error);
+    res.status(500).json({ error: 'Failed to update employee' });
   }
 });
 
 // Delete an employee
-app.delete("/employees/:id", async (req, res) => {
+app.delete('/employees/:id', async (req, res) => {
   try {
-    const employeeRef = db.collection("employees").doc(req.params.id);
-    const doc = await employeeRef.get();
-
-    if (!doc.exists) {
-      return res.status(404).json({ error: "Employee not found" });
-    }
-
-    // Delete photo from Firebase Storage
-    const photoURL = doc.data().photoURL;
-    if (photoURL) {
-      const file = bucket.file(photoURL.split(`${bucket.name}/`)[1]);
-      await file.delete();
-    }
-
-    // Delete employee record from Firestore
-    await employeeRef.delete();
-    res.json({ message: "Employee deleted successfully" });
+    const employeeId = req.params.id;
+    await employeesCollection.doc(employeeId).delete();
+    res.status(200).json({ message: 'Employee deleted successfully' });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(error);
+    res.status(500).json({ error: 'Failed to delete employee' });
   }
 });
 
-const PORT = process.env.PORT || 5000;
+// Start server
+const PORT = 5000;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });
