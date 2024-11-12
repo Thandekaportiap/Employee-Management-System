@@ -7,7 +7,7 @@ import "./App.css";
 function App() {
   return (
     <div>
-      <h1>Employee Management System</h1>
+      <h1 className="text-3xl font-bold text-center">Employee Management System</h1>
       <EmployeeForm />
       <EmployeeList />
     </div>
