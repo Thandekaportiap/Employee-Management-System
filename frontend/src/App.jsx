@@ -12,8 +12,8 @@ function App() {
      <Navbar/>
     <div className="bg-[#613659]  min-h-screen">
       <h1 className="text-3xl font-bold text-center py-7 ">Employee Management System</h1>
-      <EmployeePage />
       <EmployeeList />
+      <EmployeePage />
     </div>
       <Footer />
       </>
