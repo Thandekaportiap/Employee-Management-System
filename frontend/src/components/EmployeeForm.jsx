@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-function EmployeeForm() {
+function EmployeeForm({ visible }) {
   const [employee, setEmployee] = useState({
     name: "",
     surname: "",
@@ -40,6 +40,8 @@ function EmployeeForm() {
       alert("There was an error adding the employee.");
     }
   };
+
+  if (!visible) return null;
 
   return (
     <form 

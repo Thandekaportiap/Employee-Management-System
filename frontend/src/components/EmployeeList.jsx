@@ -31,11 +31,22 @@ function EmployeeList() {
         <h2>Employee List</h2>
         <ul>
           {employees.length === 0 ? (
-            <li>No employees found.</li>
+            <li className="text-center text-red-500">No employees found</li>
           ) : (
             employees.map((employee) => (
               <li key={employee.id}>
-                {employee.name} {employee.surname}, {employee.role}
+                <div class="max-w-sm mx-auto ">
+    <div class="p-3 flex items-center justify-between border-t cursor-pointer hover:bg-gray-200">
+        <div class="flex items-center">
+            <img class="rounded-full h-10 w-10" src="https://loremflickr.com/g/600/600/girl" />
+            <div class="ml-2 flex flex-col">
+                <div class="leading-snug text-sm text-white font-bold">{employee.name}</div>
+                <div class="leading-snug text-xs text-white">{employee.surname}</div>
+            </div>
+        </div>
+        <button class="h-8 px-3 text-md font-bold text-blue-400 border border-blue-400 rounded-full hover:bg-blue-100">view</button>
+    </div>
+    </div>
               </li>
             ))
           )}
