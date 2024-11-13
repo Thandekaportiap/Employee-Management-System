@@ -42,15 +42,69 @@ function EmployeeForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col justify-center items-center">
-      <input type="text" name="name" placeholder="Name" value={employee.name} onChange={handleChange} required />
-      <input type="text" name="surname" placeholder="Surname" value={employee.surname} onChange={handleChange} required />
-      <input type="number" name="age" placeholder="Age" value={employee.age} onChange={handleChange} required />
-      <input type="text" name="idNumber" placeholder="ID Number" value={employee.idNumber} onChange={handleChange} required />
-      <input type="text" name="role" placeholder="Role" value={employee.role} onChange={handleChange} required />
-      <input type="file" name="photo" onChange={handleFileChange} />
-      <button type="submit">Add Employee</button>
-    </form>
+    <form 
+    onSubmit={handleSubmit} 
+    className="flex flex-col justify-center items-center max-w-md mx-auto p-6 bg-white shadow-md rounded-lg"
+>
+    <h2 className="text-xl font-bold mb-4">Add Employee</h2>
+    <input 
+        type="text" 
+        name="name" 
+        placeholder="Name" 
+        value={employee.name} 
+        onChange={handleChange} 
+        required 
+        className="w-full p-2 mb-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
+    />
+    <input 
+        type="text" 
+        name="surname" 
+        placeholder="Surname" 
+        value={employee.surname} 
+        onChange={handleChange} 
+        required 
+        className="w-full p-2 mb-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
+    />
+    <input 
+        type="number" 
+        name="age" 
+        placeholder="Age" 
+        value={employee.age} 
+        onChange={handleChange} 
+        required 
+        className="w-full p-2 mb-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
+    />
+    <input 
+        type="text" 
+        name="idNumber" 
+        placeholder="ID Number" 
+        value={employee.idNumber} 
+        onChange={handleChange} 
+        required 
+        className="w-full p-2 mb-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
+    />
+    <input 
+        type="text" 
+        name="role" 
+        placeholder="Role" 
+        value={employee.role} 
+        onChange={handleChange} 
+        required 
+        className="w-full p-2 mb-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400"
+    />
+    <input 
+        type="file" 
+        name="photo" 
+        onChange={handleFileChange} 
+        className="w-full mb-3 border border-gray-300 rounded-md p-2"
+    />
+    <button 
+        type="submit" 
+        className="w-full py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition duration-200"
+    >
+        Add Employee
+    </button>
+</form>
   );
 }
 
