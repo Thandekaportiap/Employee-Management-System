@@ -18,31 +18,36 @@ function EmployeeForm() {
   };
 
   const handleFileChange = (e) => {
-    setEmployee({ ...employee, photo: e.target.files[0] });
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.readAsDataURL(file); // Read file as base64
+      reader.onloadend = () => {
+        setEmployee({ ...employee, photo: reader.result }); // Store base64 in state
+      };
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
-    Object.keys(employee).forEach((key) => formData.append(key, employee[key]));
 
+    const formData = { ...employee };
     try {
-      await axios.post("http://localhost:5000/employees", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      await axios.post("http://localhost:5000/employees", formData);
       alert("Employee added successfully");
     } catch (error) {
       console.error("Error adding employee:", error);
+      alert("There was an error adding the employee.");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input type="text" name="name" placeholder="Name" onChange={handleChange} />
-      <input type="text" name="surname" placeholder="Surname" onChange={handleChange} />
-      <input type="number" name="age" placeholder="Age" onChange={handleChange} />
-      <input type="text" name="idNumber" placeholder="ID Number" onChange={handleChange} />
-      <input type="text" name="role" placeholder="Role" onChange={handleChange} />
+    <form onSubmit={handleSubmit} className="flex flex-col justify-center items-center">
+      <input type="text" name="name" placeholder="Name" value={employee.name} onChange={handleChange} required />
+      <input type="text" name="surname" placeholder="Surname" value={employee.surname} onChange={handleChange} required />
+      <input type="number" name="age" placeholder="Age" value={employee.age} onChange={handleChange} required />
+      <input type="text" name="idNumber" placeholder="ID Number" value={employee.idNumber} onChange={handleChange} required />
+      <input type="text" name="role" placeholder="Role" value={employee.role} onChange={handleChange} required />
       <input type="file" name="photo" onChange={handleFileChange} />
       <button type="submit">Add Employee</button>
     </form>

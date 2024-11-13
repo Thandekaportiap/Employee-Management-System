@@ -1,30 +1,36 @@
 import express from 'express';
-import { db } from './firebaseConfig.js';
-import bodyParser from 'body-parser';
+import cors from 'cors'; // Import CORS middleware
+import { db } from './firebaseConfig.js'; // Firestore setup
+
+const employeesCollection = db.collection('employees')
 
 const app = express();
-app.use(bodyParser.json({ limit: '10mb' })); // Limit to handle larger base64 images
 
-const employeesCollection = db.collection('employees');
+// Enable CORS for all origins (you can restrict this to specific origins later)
+app.use(cors());
 
-// Add a new employee
+// Middleware to parse JSON request bodies
+app.use(express.json());
+
 app.post('/employees', async (req, res) => {
   try {
-    const { name, surname, age, idNumber, photo, role } = req.body;
+    const { name, surname, age, idNumber, role, photo } = req.body;
 
+    // Create a new employee document with base64-encoded photo
     const newEmployee = {
       name,
       surname,
       age,
       idNumber,
-      photo, // base64 string
       role,
+      photo, // Store the base64-encoded image
     };
 
-    const employeeDoc = await employeesCollection.add(newEmployee);
+    // Save employee data in Firestore
+    const employeeDoc = await db.collection('employees').add(newEmployee);
     res.status(201).json({ id: employeeDoc.id, ...newEmployee });
   } catch (error) {
-    console.error(error);
+    console.error('Error adding employee:', error);
     res.status(500).json({ error: 'Failed to add employee' });
   }
 });
@@ -34,12 +40,14 @@ app.get('/employees', async (req, res) => {
   try {
     const snapshot = await employeesCollection.get();
     const employees = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    console.log('Fetched employees:', employees); // Log the employees to see the data
     res.status(200).json(employees);
   } catch (error) {
-    console.error(error);
+    console.error('Error fetching employees:', error);
     res.status(500).json({ error: 'Failed to fetch employees' });
   }
 });
+
 
 // Get a specific employee by ID
 app.get('/employees/:id', async (req, res) => {
