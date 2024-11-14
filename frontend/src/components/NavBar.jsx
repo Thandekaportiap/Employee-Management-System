@@ -11,7 +11,7 @@ const Navbar = () => {
     <nav className="bg-gray-800 p-4">
       <div className="container mx-auto flex items-center justify-between">
         {/* Logo */}
-        <div className="text-white text-xl font-semibold">MyLogo</div>
+        <div className="text-white text-xl font-semibold">EMS</div>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex space-x-8">
