@@ -5,12 +5,17 @@ import { db } from './firebaseConfig.js'; // Firestore setup
 const employeesCollection = db.collection('employees')
 
 const app = express();
+const port = process.env.PORT || 5000;
 
 // Enable CORS for all origins (you can restrict this to specific origins later)
 app.use(cors());
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
+
+app.get('/', (req, res) => {
+  res.send('Employee Management System');
+});
 
 app.post('/employees', async (req, res) => {
   try {
@@ -102,7 +107,7 @@ app.delete('/employees/:id', async (req, res) => {
 });
 
 // Start server
-const PORT = 5000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+
+app.listen(port, '0.0.0.0', () => {
+  console.log(`Server is running on port ${port}`);
 });
