@@ -12,7 +12,7 @@ function EmployeeList() {
     useEffect(() => {
         const fetchEmployees = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/employees");
+                const response = await axios.get("https://employee-management-system-lflc.onrender.com/employees");
                 setEmployees(response.data);
             } catch (err) {
                 setError('Error fetching employees');
@@ -37,7 +37,7 @@ function EmployeeList() {
     const handleEditSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.put(`http://localhost:5000/employees/${selectedEmployee.id}`, formData);
+            await axios.put(`https://employee-management-system-lflc.onrender.com/employees/${selectedEmployee.id}`, formData);
             setEmployees(employees.map(emp => (emp.id === selectedEmployee.id ? formData : emp)));
             setIsEditing(false);
             alert("Employee details updated successfully");
@@ -49,7 +49,7 @@ function EmployeeList() {
 
     const handleDelete = async (employeeId) => {
         try {
-            await axios.delete(`http://localhost:5000/employees/${employeeId}`);
+            await axios.delete(`https://employee-management-system-lflc.onrender.com/employees/${employeeId}`);
             setEmployees(employees.filter(emp => emp.id !== employeeId));
             setSelectedEmployee(null);
         } catch (err) {
@@ -86,22 +86,22 @@ function EmployeeList() {
                 ) : (
                     employees.map((employee) => (
                         <li key={employee.id}>
-                            <div className="max-w-sm mx-auto">
-                                <div className="p-3 flex items-center justify-between border-t cursor-pointer hover:bg-gray-200">
+                            <div className="max-w-md mx-auto">
+                                <div className="p-4 flex items-center justify-between border-t cursor-pointer hover:bg-gray-200">
                                     <div className="flex items-center">
                                         <img
-                                            className="rounded-full h-10 w-10"
+                                            className="rounded-full h-16 w-16"
                                             src={employee.photo || "https://loremflickr.com/g/600/600/person"} 
                                             alt={`${employee.name} ${employee.surname}`}
                                         />
                                         <div className="ml-2 flex flex-col">
-                                            <div className="leading-snug text-sm font-bold">{employee.name}</div>
-                                            <div className="leading-snug text-xs">{employee.surname}</div>
+                                            <div className="leading-snug text-xl font-bold">{employee.name}</div>
+                                            <div className="leading-snug text-xl">{employee.surname}</div>
                                         </div>
                                     </div>
                                     <button
                                         onClick={() => handleViewClick(employee)}
-                                        className="h-8 px-3 text-md font-bold text-blue-400 border border-blue-400 rounded-full hover:bg-blue-100"
+                                        className="h-8 px-3 py-1 text-md font-bold text-blue-400 border border-blue-400 rounded-full hover:bg-blue-100"
                                     >
                                         View
                                     </button>
@@ -113,11 +113,11 @@ function EmployeeList() {
             </ul>
 
             {selectedEmployee && (
-                <div className="max-w-md mx-auto mt-8 p-6 bg-white shadow-md rounded-lg">
+                <div className="max-w-md mx-auto mt-8 p-6 bg-white shadow-md  rounded-lg flex flex-col justify-center items-center">
                     <h3 className="text-2xl font-bold mb-4">{selectedEmployee.name} {selectedEmployee.surname}</h3>
-                    <p><strong>Age:</strong> {selectedEmployee.age}</p>
-                    <p><strong>ID Number:</strong> {selectedEmployee.idNumber}</p>
-                    <p><strong>Role:</strong> {selectedEmployee.role}</p>
+                    <p className="mb-2"><strong>Age:</strong> {selectedEmployee.age}</p>
+                    <p className="mb-2"><strong>ID Number:</strong> {selectedEmployee.idNumber}</p>
+                    <p className="mb-2"><strong>Role:</strong> {selectedEmployee.role}</p>
                     <img
                         className="mt-4 rounded-lg w-32 h-32 object-cover"
                         src={selectedEmployee.photo || "https://loremflickr.com/g/600/600/person"}

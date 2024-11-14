@@ -1,4 +1,3 @@
-// frontend/src/App.js
 import React from "react";
 import EmployeeList from "./components/EmployeeList";
 import EmployeePage from "./pages/EmployeesPage";

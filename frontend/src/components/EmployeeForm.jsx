@@ -33,7 +33,7 @@ function EmployeeForm({ visible }) {
 
     const formData = { ...employee };
     try {
-      await axios.post("http://localhost:5000/employees", formData);
+      await axios.post("https://employee-management-system-lflc.onrender.com/employees", formData);
       alert("Employee added successfully");
     } catch (error) {
       console.error("Error adding employee:", error);
